@@ -1,0 +1,13 @@
+CREATE OR REPLACE PROCEDURE second(
+  lastName IN empbb02.ename%TYPE,
+  era OUT NUMBER,
+  average OUT NUMBER) AS
+  BEGIN
+  SELECT NVL(i.average,0), NVL(i.era,0)
+  INTO average,era
+  FROM infobb02 i, empbb02 e
+  WHERE e.empNumber = i.empNumber and e.ename = lname;
+ END;
+ .
+SQL> /
+

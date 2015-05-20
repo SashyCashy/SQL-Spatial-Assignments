@@ -1,0 +1,7 @@
+sqlldr st237/cs514@cfedb.sdsu.edu loademps_data.ctl
+
+sqlldr st237/cs514@cfedb.sdsu.edu loadinfos_data.ctl
+
+sqlldr st237/cs514@cfedb.sdsu.edu loadsals_data.ctl
+
+sqlldr st237/cs514@cfedb.sdsu.edu loaddepts_data.ctl

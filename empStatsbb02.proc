@@ -1,0 +1,12 @@
+CREATE OR REPLACE PROCEDURE empStatsbb02(
+  deptid IN empbb02.deptno%TYPE,
+  avgsal OUT NUMBER,   
+  totsal OUT NUMBER) AS
+BEGIN
+  SELECT ROUND(AVG(empbb02.sal)),SUM(empbb02.sal)
+  INTO avgsal,totsal       
+  FROM empbb02
+  WHERE empbb02.deptno = deptid;
+END;
+.
+/

@@ -1,0 +1,36 @@
+SQL> set serveroutput on
+SQL> set echo on
+SQL> set pages 100
+SQL> 
+SQL> CREATE OR REPLACE PROCEDURE infoStatsbb02(
+  2    enames IN empbb02.ename%TYPE,
+  3    avg OUT NUMBER,
+  4    era OUT NUMBER) AS
+  5  BEGIN
+  6    SELECT infobb02.average,infobb02.era
+  7    INTO avg,era
+  8    FROM infobb02
+  9    WHERE infobb02.empno = (select empbb02.empno from empbb02 where empbb02.ename = enames);
+ 10  END;
+ 11  .
+SQL> /
+
+Procedure created.
+
+SQL> 
+SQL> VARIABLE avg NUMBER
+SQL> VARIABLE era NUMBER
+SQL> VARIABLE name VARCHAR2(10)
+SQL> BEGIN
+  2    :name:='minoso';
+  3  
+  4    infoStatsbb02(:name,:avg,:era);
+  5    DBMS_OUTPUT.PUT_LINE(:name || ' has an era of '||nvl(:era,0)||
+  6  	 ' and the average is '||nvl(:avg,0));
+  7  END;
+  8  /
+minoso has an era of 32 and the average is 270                                  
+
+PL/SQL procedure successfully completed.
+
+SQL> exit

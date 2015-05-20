@@ -1,0 +1,170 @@
+SQL> create type cityInfo as object (
+  2  cityName varchar2 (100),
+  3  latitude number,
+  4  longitude number,
+  5  member function getLongitude return varchar2,
+  6  pragma restrict_references(getLongitude,WNDS));
+  7  /
+create type cityInfo as object (
+            *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object 
+
+
+SQL> 
+SQL> create type treasureInfo as object(
+  2  treasureName varchar2(150),
+  3  propertyDetails varchar2(1050));
+  4  /
+create type treasureInfo as object(
+            *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object 
+
+
+SQL> 
+SQL> create type treasureDetails as varray(10) of treasureInfo;
+  2  /
+create type treasureDetails as varray(10) of treasureInfo;
+            *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object 
+
+
+SQL> 
+SQL> create or replace type body cityInfo as member function getLongitude return
+  2  varchar2 is result varchar2(100);
+  3  
+  4  BEGIN
+  5  if(self.longitude < 0) THEN
+  6  result := Replace(to_char (self.longitude),'-' || 'W';
+  7  else
+  8  result := Replace(to_char (self.longitude),'-' || 'E';
+  9  end if;
+ 10  return result;
+ 11  end;
+ 12  end;
+ 13  /
+
+Warning: Type Body created with compilation errors.
+
+SQL> 
+SQL> show errors;
+Errors for TYPE BODY CITYINFO:
+
+LINE/COL ERROR                                                                  
+-------- -----------------------------------------------------------------      
+6/54     PLS-00103: Encountered the symbol ";" when expecting one of the        
+         following:                                                             
+         ) , * & | = - + < / > at in is mod remainder not rem => ..             
+         <an exponent (**)> <> or != or ~= >= <= <> and or like LIKE2_          
+         LIKE4_ LIKEC_ between || member SUBMULTISET_                           
+                                                                                
+SQL> 
+SQL> create table museum (museumId number,
+  2  musuemName varchar2(125),
+  3  country varchar2(120),
+  4  category varchar2(120),
+  5  city cityInfo,
+  6  treasures treasureDetails,
+  7  wlink varchar2(150),
+  8  primary key(museumId));
+
+Table created.
+
+SQL> 
+SQL> INSERT INTO museum VALUES(1,'Museo Nacional de Antropologia','Mexico', 'Archaeological and Anthropological Museum',
+  2  cityInfo('Mexico City',21.3114,-157.7964),
+  3  treasureDetails(treasureInfo('Pectoral Huasteca','Found in Ancient Tamuin'),
+  4  treasureInfo('Atlatl and Fisga','An ancient mexican weapon')),
+  5  'http://www.mna.inah.gob.mx/index.html');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO museum VALUES(2,'Rijksmuseum','Netherlands', 'Ancient Art',
+  2  cityInfo('Amsterdam',52.3667,4.9000),
+  3  treasureDetails(treasureInfo('Eight Stacked Beams','Carel Visser, 1964'),
+  4  treasureInfo('Children of the Sea','Jozef Israels, 1872'),
+  5  treasureInfo('Model of the William Rex','Cornelis Moesman, Adriaen de Vriend, 1698'),
+  6  treasureInfo('Wine fountain and cooler','attributed to Alger Mensma, 1731 - 1732'),
+  7  treasureInfo('Stadtholder’s chair','Gerrit Hutte, Pieter van Dijck, 1747')),
+  8  'https://www.rijksmuseum.nl/en/explore-the-collection');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO museum VALUES(3,'Heritage Museum','Russia', 'Modern Art',
+  2  cityInfo('Saint Petersburg',59.9500,30.3000),
+  3  treasureDetails(treasureInfo('Rubens and His Age','Catherine the Great''s son.')),
+  4  'http://www.hermitagemuseum.org/');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO museum VALUES(4,'Shaanxi History Museum','China', 'Modern Art',
+  2  cityInfo('Shaanxi',35.6000,108.4000),
+  3  treasureDetails(treasureInfo('Ox-Shaped Zun','Unearthed in 1967 '),
+  4  treasureInfo('Du Tige-Shapred Tally','Unearthed in 1957')),
+  5  'http://e.sxhm.com/');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO museum VALUES(5,'Vatican Musuem','Italy', 'Archaeological and Anthropological Museum',
+  2  cityInfo('Vatican City',41.9033, 12.4533),
+  3  treasureDetails(treasureInfo('Fresco of Mercury','-'),
+  4  treasureInfo('A Colossal Statue of Ceres','identified by grain in her hand.')),
+  5  'http://www.museivaticani.va/');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO museum VALUES(6,'Honolulu Museum of Art','United States', 'Ancient Art',
+  2  cityInfo('Honolulu',21.3114,-157.7964),
+  3  treasureDetails(treasureInfo(' 18,000 paintings, sculptures','from ancient times'),
+  4  treasureInfo('View of the Castel dellOvo, Naples','Carlo Bonavia'),
+  5  treasureInfo('Dancing Krishna idol','14th Century')),
+  6  'http://honolulumuseum.org/');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO museum VALUES(7,'Art Institute of Chicago','U.S.', 'Modern Art',
+  2  cityInfo('Chicago',41.8369, 87.6847),
+  3  treasureDetails(treasureInfo('Fragment of a Mosaic with the Apostle Andrew','Painted in 11th Century '),
+  4  treasureInfo('Head of Aphrodite','1st century A.D. Byzantine. Greece')),
+  5  'http://www.artic.edu/');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO museum VALUES(8,'The Acropolis Museum','Greece', 'Ancient Art',
+  2  cityInfo('Athens',37.9667, 23.7167),
+  3  treasureDetails(treasureInfo('The Archiac Gallery','Hekatompedon')
+  4  ),
+  5  'http://www.theacropolismuseum.gr/');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO museum VALUES(9,'Smithsonian''s National Air and Space Museum','U.S.','Space Gallery',
+  2  cityInfo('Washington D.C.',38.8951, 77.0367),
+  3  treasureDetails(treasureInfo('Command Module, Apollo 11','first manned spacecraft'),
+  4  treasureInfo('Missile, Surface-to-Surface, Matador TM-61C','nuclear warhead')),
+  5  'http://airandspace.si.edu/');
+
+1 row created.
+
+SQL> 
+SQL> INSERT INTO museum VALUES(10,'Brooklyn Museum','United States', 'Ancient Art',
+  2  cityInfo('New York',40.7127,- 74.0059),
+  3  treasureDetails(treasureInfo('Head of a Guardian','1185–1333'),
+  4  treasureInfo('S. Marco, Venice, Italy','1901'),
+  5  treasureInfo('Block Statue of Senwosret-senebefny','Middle Kingdom')),
+  6  'http://www.brooklynmuseum.org/home.php');
+
+1 row created.
+
+SQL> 
+SQL> spool off;

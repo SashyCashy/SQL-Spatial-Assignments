@@ -1,0 +1,253 @@
+xxSQL> --1.Make empno the primary key of both empbb02 and infobb02.
+SQL> --Make deptno the primary key for deptbb02.Create an appropriate two
+SQL> --column key for salsbb02.Use the naming convention for
+SQL> --all constraints in Lab2, that was given in class.
+SQL> 
+SQL> alter table empbb02 add constraint empbb02_empno_pk PRIMARY KEY(empno);
+
+Table altered.
+
+SQL> alter table infobb02 add constraint infobb02_empno_pk PRIMARY KEY (empno);
+
+Table altered.
+
+SQL> alter table salsbb02 add constraint salsbb02_grade_role_pk PRIMARY KEY (grade,role);
+
+Table altered.
+
+SQL> alter table deptbb02 add constraint deptbb02_deptno_pk PRIMARY KEY (deptno);
+
+Table altered.
+
+SQL> 
+SQL> --2. Check your primary key for deptbb02 by attempting to add a new dept.
+SQL> --name with a duplicate deptno.
+SQL> 
+SQL> insert into deptbb02 values (20,'Security','Bawarchi','Miramar','Let the play begin!');
+insert into deptbb02 values (20,'Security','Bawarchi','Miramar','Let the play begin!')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (ST27.DEPTBB02_DEPTNO_PK) violated 
+
+
+SQL> 
+SQL> --3.Add a unique constraint for ename in empbb02.
+SQL> alter table empbb02 add constraint empbb02_ename_uk unique(ename);
+
+Table altered.
+
+SQL> 
+SQL> --4.The team has decided that, except for the gm and catchers, a player
+SQL> --name should not exceed 10 letters.  Implement this as a check constraint.
+SQL> 
+SQL> alter table empbb02 add constraint empbb02_ename_ck check (length(ename) <=10 or pos in ('gm','catcher'));
+
+Table altered.
+
+SQL> 
+SQL> --5(a) Change the length constraint on ename to 15 using an ALTER TABLE command
+SQL> 
+SQL> alter table empbb02 modify ename varchar(15);
+
+Table altered.
+
+SQL> 
+SQL> -- 5(b) Violate the constraint in 4. to make sure you did it correctly,
+SQL> -- by trying to add a Hall of Fame player whose name exceeds length 10.
+SQL> 
+SQL> insert into empbb02 values (1,'Alexander.C','pitcher',712,'01-Jan-97',1000,10,0);
+insert into empbb02 values (1,'Alexander.C','pitcher',712,'01-Jan-97',1000,10,0)
+*
+ERROR at line 1:
+ORA-02290: check constraint (ST27.EMPBB02_ENAME_CK) violated 
+
+
+SQL> 
+SQL> --6.Make empno a foreign key in infobb02, with parent table empbb02
+SQL> 
+SQL> alter table infobb02 add constraint infobb02_empno_fk foreign key(empno) references empbb02 (empno);
+
+Table altered.
+
+SQL> 
+SQL> -- 7.  Make depno a foreign key in empbb02, with parent table deptbb02
+SQL> 
+SQL> alter table empbb02 add constraint empbb02_deptno_fk foreign key  (deptno) references deptbb02(deptno);
+
+Table altered.
+
+SQL> 
+SQL> --8.  Test one of your foreign key constraints to make sure it is working.
+SQL> --Test it in two ways, one of which is attempting to delete a parent table.
+SQL> 
+SQL> drop table deptbb02;
+drop table deptbb02
+           *
+ERROR at line 1:
+ORA-02449: unique/primary keys in table referenced by foreign keys 
+
+
+SQL> 
+SQL> insert into infobb02 values(850,'xyz','abc',60,0,0);
+insert into infobb02 values(850,'xyz','abc',60,0,0)
+*
+ERROR at line 1:
+ORA-02291: integrity constraint (ST27.INFOBB02_EMPNO_FK) violated - parent key 
+not found 
+
+
+SQL> 
+SQL> --9.Display ename, pos, hiredate from empbb02 for all employees not in
+SQL> --department 50.  Make the column headers Last Name, Position, Date Hired.
+SQL> --Show dollar signs and commas for salary, and show zero cents for
+SQL> --each salary, without changing the data.
+SQL> 
+SQL> select ename as "Last Name",pos as "Position",hiredate as "Date Hired",to_char(sal,'$99,999,900.00') as "Salary" from empbb02 where not deptno=50;
+
+Last Name       Position     Date Hire Salary                                   
+--------------- ------------ --------- ---------------                          
+rickey          gm           01-JAN-98      $10,000.00                          
+lasorda         coach        10-JAN-98       $2,000.00                          
+bochy           coach        11-JAN-98       $2,000.00                          
+berra           coach        12-JAN-98       $2,000.00                          
+musial          right field  01-FEB-98      $42,000.00                          
+gehrig          first base   11-MAR-98      $85,000.00                          
+minoso          shortstop    05-MAY-98      $85,000.00                          
+sandberg        second base  28-FEB-98      $25,000.00                          
+cey             third base   10-JAN-99      $15,000.00                          
+brown           pitcher      18-OCT-99      $40,000.00                          
+mays            center field 01-JAN-98     $240,000.00                          
+mungo           pitcher      10-MAR-00      $20,000.00                          
+johnson         pitcher      08-NOV-98      $50,000.00                          
+williams        left field   05-JAN-99     $150,000.00                          
+
+14 rows selected.
+
+SQL> 
+SQL> --10.  Describe the meta-table user_constraints, and notice the first
+SQL> --five fields.  Display your constraints, using these five fields.
+SQL> 
+SQL> desc user_constraints;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ OWNER                                     NOT NULL VARCHAR2(30)
+ CONSTRAINT_NAME                           NOT NULL VARCHAR2(30)
+ CONSTRAINT_TYPE                                    VARCHAR2(1)
+ TABLE_NAME                                NOT NULL VARCHAR2(30)
+ SEARCH_CONDITION                                   LONG
+ R_OWNER                                            VARCHAR2(30)
+ R_CONSTRAINT_NAME                                  VARCHAR2(30)
+ DELETE_RULE                                        VARCHAR2(9)
+ STATUS                                             VARCHAR2(8)
+ DEFERRABLE                                         VARCHAR2(14)
+ DEFERRED                                           VARCHAR2(9)
+ VALIDATED                                          VARCHAR2(13)
+ GENERATED                                          VARCHAR2(14)
+ BAD                                                VARCHAR2(3)
+ RELY                                               VARCHAR2(4)
+ LAST_CHANGE                                        DATE
+ INDEX_OWNER                                        VARCHAR2(30)
+ INDEX_NAME                                         VARCHAR2(30)
+ INVALID                                            VARCHAR2(7)
+ VIEW_RELATED                                       VARCHAR2(14)
+
+SQL> 
+SQL> select owner,constraint_name,constraint_type,table_name,search_condition from user_constraints;
+
+OWNER                          CONSTRAINT_NAME                C                 
+------------------------------ ------------------------------ -                 
+TABLE_NAME                                                                      
+------------------------------                                                  
+SEARCH_CONDITION                                                                
+--------------------------------------------------------------------------------
+ST27                           EMPBB02_DEPTNO_FK              R                 
+EMPBB02                                                                         
+                                                                                
+                                                                                
+ST27                           INFOBB02_EMPNO_FK              R                 
+INFOBB02                                                                        
+                                                                                
+                                                                                
+ST27                           EMPBB02_ENAME_CK               C                 
+EMPBB02                                                                         
+length(ename) <=10 or pos in ('gm','catcher')                                   
+                                                                                
+ST27                           SYS_C00150821                  C                 
+EMPBB02                                                                         
+"ENAME" IS NOT NULL                                                             
+                                                                                
+ST27                           EMPBB02_EMPNO_PK               P                 
+EMPBB02                                                                         
+                                                                                
+                                                                                
+ST27                           INFOBB02_EMPNO_PK              P                 
+INFOBB02                                                                        
+                                                                                
+                                                                                
+ST27                           SALSBB02_GRADE_ROLE_PK         P                 
+SALSBB02                                                                        
+                                                                                
+                                                                                
+ST27                           DEPTBB02_DEPTNO_PK             P                 
+DEPTBB02                                                                        
+                                                                                
+                                                                                
+ST27                           EMPBB02_ENAME_UK               U                 
+EMPBB02                                                                         
+                                                                                
+                                                                                
+
+9 rows selected.
+
+SQL> 
+SQL> --11.Drop the check constraint that you made earlier.
+SQL> alter table empbb02 drop constraint empbb02_ename_ck;
+
+Table altered.
+
+SQL> 
+SQL> --12.The boss makes a new year's resolution to send anniversary cards
+SQL> --once a month to the appropriate employees.  Display enames and hiredates
+SQL> --of all players who were hired in the month of January.	Your code
+SQL> --should work tomorrow even if you trade two thirds of the team tonight.
+SQL> 
+SQL> 
+SQL> elect ename,hiredate from empbb02 where pos not in ('gm','coach')and hiredate like '__-JAN%'
+
+ENAME           HIREDATE                                                        
+--------------- ---------                                                       
+cey             10-JAN-99                                                       
+mays            01-JAN-98                                                       
+williams        05-JAN-99                                                       
+
+3 rows selected.
+
+SQL> 
+SQL> --13.The boss wants to create a security department with deptno 60.  A guy
+SQL> --named Mongo is a one man force, so add him to the dept.	He has a perfect
+SQL> --record, so his batting average will be 1000, and his uniform number 007.
+SQL> --Mongo has no first name or nickname, and the hiredate can be given by
+SQL> --SYSDATE.  Find his department a good Latin motto, and create values for
+SQL> --other fields with similar creativity, but some discretion.  Mongo is not
+SQL> --big on levity.
+SQL> 
+SQL>  insert into deptbb02 values (60,'Security','Bawarchi','Lo Jolla','a bene placito');
+
+1 row created.
+
+SQL>  insert into empbb02 values(007,'Mongo','pitcher',712,to_char(sysdate,'dd-month-yy'),0,60,0);
+
+1 row created.
+
+SQL> insert into infobb02 values(007,'','',99,1000,0);
+
+1 row created.
+
+SQL> 
+SQL> --14. Add a constraint that a department number must be evenly divisible
+SQL> 	-- by 10.
+SQL>  alter table deptbb02 add constraint deptbb02_deptno_ck check ((deptno/10)>= ceil(deptno/10));
+
+Table altered.
+
+SQL> set echo off;
