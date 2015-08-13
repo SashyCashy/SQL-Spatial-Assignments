@@ -1,0 +1,14 @@
+SET ECHO ON
+SET SERVEROUTPUT ON
+VARIABLE mo_sal VARCHAR2(30);
+VARIABLE MO NUMBER;
+VARIABLE DATE2 DATE := '03-JAN-07';
+DECLARE
+	v_sal NUMBER(9,2) := &ann_sal;
+	v_date DATE := '03-JAN-07';	
+BEGIN
+	:mo_sal := to_char(v_sal,'$99,999');
+END;
+/
+PRINT mo_sal
+

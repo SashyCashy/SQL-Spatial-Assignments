@@ -1,23 +1,35 @@
-xxSQL> --1.Make empno the primary key of both empbb02 and infobb02.
+SQL> --1.Make empno the primary key of both empbb02 and infobb02.
 SQL> --Make deptno the primary key for deptbb02.Create an appropriate two
 SQL> --column key for salsbb02.Use the naming convention for
 SQL> --all constraints in Lab2, that was given in class.
 SQL> 
 SQL> alter table empbb02 add constraint empbb02_empno_pk PRIMARY KEY(empno);
+alter table empbb02 add constraint empbb02_empno_pk PRIMARY KEY(empno)
+                                                    *
+ERROR at line 1:
+ORA-02260: table can have only one primary key 
 
-Table altered.
 
 SQL> alter table infobb02 add constraint infobb02_empno_pk PRIMARY KEY (empno);
+alter table infobb02 add constraint infobb02_empno_pk PRIMARY KEY (empno)
+                                                      *
+ERROR at line 1:
+ORA-02260: table can have only one primary key 
 
-Table altered.
 
 SQL> alter table salsbb02 add constraint salsbb02_grade_role_pk PRIMARY KEY (grade,role);
+alter table salsbb02 add constraint salsbb02_grade_role_pk PRIMARY KEY (grade,role)
+                                                                              *
+ERROR at line 1:
+ORA-00904: "ROLE": invalid identifier 
 
-Table altered.
 
 SQL> alter table deptbb02 add constraint deptbb02_deptno_pk PRIMARY KEY (deptno);
+alter table deptbb02 add constraint deptbb02_deptno_pk PRIMARY KEY (deptno)
+                                                       *
+ERROR at line 1:
+ORA-02260: table can have only one primary key 
 
-Table altered.
 
 SQL> 
 SQL> --2. Check your primary key for deptbb02 by attempting to add a new dept.
@@ -27,7 +39,7 @@ SQL> insert into deptbb02 values (20,'Security','Bawarchi','Miramar','Let the pl
 insert into deptbb02 values (20,'Security','Bawarchi','Miramar','Let the play begin!')
 *
 ERROR at line 1:
-ORA-00001: unique constraint (ST27.DEPTBB02_DEPTNO_PK) violated 
+ORA-00001: unique constraint (SASHANK.DEPTBB02_PK) violated 
 
 
 SQL> 
@@ -57,17 +69,20 @@ SQL> -- by trying to add a Hall of Fame player whose name exceeds length 10.
 SQL> 
 SQL> insert into empbb02 values (1,'Alexander.C','pitcher',712,'01-Jan-97',1000,10,0);
 insert into empbb02 values (1,'Alexander.C','pitcher',712,'01-Jan-97',1000,10,0)
-*
+            *
 ERROR at line 1:
-ORA-02290: check constraint (ST27.EMPBB02_ENAME_CK) violated 
+ORA-04098: trigger 'SASHANK.bi_EMPBB02' is invalid and failed re-validation 
 
 
 SQL> 
 SQL> --6.Make empno a foreign key in infobb02, with parent table empbb02
 SQL> 
 SQL> alter table infobb02 add constraint infobb02_empno_fk foreign key(empno) references empbb02 (empno);
+alter table infobb02 add constraint infobb02_empno_fk foreign key(empno) references empbb02 (empno)
+                                    *
+ERROR at line 1:
+ORA-02298: cannot validate (SASHANK.INFOBB02_EMPNO_FK) - parent keys not found 
 
-Table altered.
 
 SQL> 
 SQL> -- 7.  Make depno a foreign key in empbb02, with parent table deptbb02
@@ -89,12 +104,8 @@ ORA-02449: unique/primary keys in table referenced by foreign keys
 
 SQL> 
 SQL> insert into infobb02 values(850,'xyz','abc',60,0,0);
-insert into infobb02 values(850,'xyz','abc',60,0,0)
-*
-ERROR at line 1:
-ORA-02291: integrity constraint (ST27.INFOBB02_EMPNO_FK) violated - parent key 
-not found 
 
+1 row created.
 
 SQL> 
 SQL> --9.Display ename, pos, hiredate from empbb02 for all employees not in
@@ -104,24 +115,22 @@ SQL> --each salary, without changing the data.
 SQL> 
 SQL> select ename as "Last Name",pos as "Position",hiredate as "Date Hired",to_char(sal,'$99,999,900.00') as "Salary" from empbb02 where not deptno=50;
 
-Last Name       Position     Date Hire Salary                                   
---------------- ------------ --------- ---------------                          
-rickey          gm           01-JAN-98      $10,000.00                          
-lasorda         coach        10-JAN-98       $2,000.00                          
-bochy           coach        11-JAN-98       $2,000.00                          
-berra           coach        12-JAN-98       $2,000.00                          
-musial          right field  01-FEB-98      $42,000.00                          
-gehrig          first base   11-MAR-98      $85,000.00                          
-minoso          shortstop    05-MAY-98      $85,000.00                          
-sandberg        second base  28-FEB-98      $25,000.00                          
-cey             third base   10-JAN-99      $15,000.00                          
-brown           pitcher      18-OCT-99      $40,000.00                          
-mays            center field 01-JAN-98     $240,000.00                          
-mungo           pitcher      10-MAR-00      $20,000.00                          
-johnson         pitcher      08-NOV-98      $50,000.00                          
-williams        left field   05-JAN-99     $150,000.00                          
+Last Name       Position                       Date Hire Salary                 
+--------------- ------------------------------ --------- ---------------        
+lasorda         coach                          10-JAN-98       $2,000.00        
+bochy           coach                          11-JAN-98       $2,000.00        
+berra           coach                          12-JAN-98       $2,000.00        
+musial          right field                    01-FEB-98      $42,000.00        
+gehrig          first base                     11-MAR-98      $85,000.00        
+minoso          shortstop                      05-MAY-98      $85,000.00        
+cey             third base                     10-JAN-99      $15,000.00        
+brown           pitcher                        18-OCT-99      $40,000.00        
+mays            center field                   01-JAN-98     $240,000.00        
+mungo           pitcher                        10-MAR-00      $20,000.00        
+johnson         pitcher                        08-NOV-98      $52,000.00        
+williams        left field                     05-JAN-99     $150,000.00        
 
-14 rows selected.
+12 rows selected.
 
 SQL> 
 SQL> --10.  Describe the meta-table user_constraints, and notice the first
@@ -130,12 +139,12 @@ SQL>
 SQL> desc user_constraints;
  Name                                      Null?    Type
  ----------------------------------------- -------- ----------------------------
- OWNER                                     NOT NULL VARCHAR2(30)
+ OWNER                                              VARCHAR2(120)
  CONSTRAINT_NAME                           NOT NULL VARCHAR2(30)
  CONSTRAINT_TYPE                                    VARCHAR2(1)
  TABLE_NAME                                NOT NULL VARCHAR2(30)
  SEARCH_CONDITION                                   LONG
- R_OWNER                                            VARCHAR2(30)
+ R_OWNER                                            VARCHAR2(120)
  R_CONSTRAINT_NAME                                  VARCHAR2(30)
  DELETE_RULE                                        VARCHAR2(9)
  STATUS                                             VARCHAR2(8)
@@ -154,50 +163,497 @@ SQL> desc user_constraints;
 SQL> 
 SQL> select owner,constraint_name,constraint_type,table_name,search_condition from user_constraints;
 
-OWNER                          CONSTRAINT_NAME                C                 
------------------------------- ------------------------------ -                 
-TABLE_NAME                                                                      
-------------------------------                                                  
+OWNER                                                                           
+--------------------------------------------------------------------------------
+CONSTRAINT_NAME                C TABLE_NAME                                     
+------------------------------ - ------------------------------                 
 SEARCH_CONDITION                                                                
 --------------------------------------------------------------------------------
-ST27                           EMPBB02_DEPTNO_FK              R                 
-EMPBB02                                                                         
+SASHANK                                                                         
+SYS_C006999                    P DEPT                                           
                                                                                 
                                                                                 
-ST27                           INFOBB02_EMPNO_FK              R                 
-INFOBB02                                                                        
+SASHANK                                                                         
+SYS_C007000                    C EMP                                            
+"EMPNO" IS NOT NULL                                                             
+                                                                                
+SASHANK                                                                         
+SYS_C007001                    P EMP                                            
                                                                                 
                                                                                 
-ST27                           EMPBB02_ENAME_CK               C                 
-EMPBB02                                                                         
+SASHANK                                                                         
+SYS_C007002                    R EMP                                            
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007003                    R EMP                                            
+                                                                                
+                                                                                
+SASHANK                                                                         
+DEMO_USERS_PK                  P DEMO_USERS                                     
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007005                    C DEMO_CUSTOMERS                                 
+"CUSTOMER_ID" IS NOT NULL                                                       
+                                                                                
+SASHANK                                                                         
+SYS_C007006                    C DEMO_CUSTOMERS                                 
+"CUST_FIRST_NAME" IS NOT NULL                                                   
+                                                                                
+SASHANK                                                                         
+SYS_C007007                    C DEMO_CUSTOMERS                                 
+"CUST_LAST_NAME" IS NOT NULL                                                    
+                                                                                
+SASHANK                                                                         
+DEMO_CUST_CREDIT_LIMIT_MAX     C DEMO_CUSTOMERS                                 
+credit_limit <= 5000                                                            
+                                                                                
+SASHANK                                                                         
+DEMO_CUSTOMERS_PK              P DEMO_CUSTOMERS                                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007010                    C DEMO_ORDERS                                    
+"ORDER_ID" IS NOT NULL                                                          
+                                                                                
+SASHANK                                                                         
+SYS_C007011                    C DEMO_ORDERS                                    
+"CUSTOMER_ID" IS NOT NULL                                                       
+                                                                                
+SASHANK                                                                         
+DEMO_ORDER_TOTAL_MIN           C DEMO_ORDERS                                    
+order_total >= 0                                                                
+                                                                                
+SASHANK                                                                         
+DEMO_ORDER_PK                  P DEMO_ORDERS                                    
+                                                                                
+                                                                                
+SASHANK                                                                         
+DEMO_ORDERS_CUSTOMER_ID_FK     R DEMO_ORDERS                                    
+                                                                                
+                                                                                
+SASHANK                                                                         
+DEMO_ORDERS_USER_ID_FK         R DEMO_ORDERS                                    
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007016                    C DEMO_PRODUCT_INFO                              
+"PRODUCT_ID" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+DEMO_PRODUCT_INFO_PK           P DEMO_PRODUCT_INFO                              
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007018                    C DEMO_ORDER_ITEMS                               
+"ORDER_ITEM_ID" IS NOT NULL                                                     
+                                                                                
+SASHANK                                                                         
+SYS_C007019                    C DEMO_ORDER_ITEMS                               
+"ORDER_ID" IS NOT NULL                                                          
+                                                                                
+SASHANK                                                                         
+SYS_C007020                    C DEMO_ORDER_ITEMS                               
+"PRODUCT_ID" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007021                    C DEMO_ORDER_ITEMS                               
+"UNIT_PRICE" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007022                    C DEMO_ORDER_ITEMS                               
+"QUANTITY" IS NOT NULL                                                          
+                                                                                
+SASHANK                                                                         
+DEMO_ORDER_ITEMS_PK            P DEMO_ORDER_ITEMS                               
+                                                                                
+                                                                                
+SASHANK                                                                         
+DEMO_ORDER_ITEMS_FK            R DEMO_ORDER_ITEMS                               
+                                                                                
+                                                                                
+SASHANK                                                                         
+DEMO_ORDER_ITEMS_PRODUCT_ID_FK R DEMO_ORDER_ITEMS                               
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007026                    C APEX$_ACL                                      
+"ID" IS NOT NULL                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007027                    C APEX$_ACL                                      
+"WS_APP_ID" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007028                    C APEX$_ACL                                      
+"USERNAME" IS NOT NULL                                                          
+                                                                                
+SASHANK                                                                         
+SYS_C007029                    C APEX$_ACL                                      
+"PRIV" IS NOT NULL                                                              
+                                                                                
+SASHANK                                                                         
+SYS_C007030                    C APEX$_ACL                                      
+"CREATED_ON" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007031                    C APEX$_ACL                                      
+"CREATED_BY" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+APEX$_ACL_PRIV_CK              C APEX$_ACL                                      
+priv in ('R','C','A')                                                           
+                                                                                
+SASHANK                                                                         
+APEX$_ACL_PK                   P APEX$_ACL                                      
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007034                    C APEX$_WS_WEBPG_SECTIONS                        
+"ID" IS NOT NULL                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007035                    C APEX$_WS_WEBPG_SECTIONS                        
+"WS_APP_ID" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007036                    C APEX$_WS_WEBPG_SECTIONS                        
+"SECTION_TYPE" IS NOT NULL                                                      
+                                                                                
+SASHANK                                                                         
+SYS_C007037                    C APEX$_WS_WEBPG_SECTIONS                        
+"CREATED_ON" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007038                    C APEX$_WS_WEBPG_SECTIONS                        
+"CREATED_BY" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+APEX$_WS_WEBPG_SECTION_TYPE_CK C APEX$_WS_WEBPG_SECTIONS                        
+section_type in ('TEXT','DATA','CHART','NAV_PAGE','NAV_SECTION')                
+                                                                                
+SASHANK                                                                         
+APEX$_WS_WEBPG_SECTION_LINK_CK C APEX$_WS_WEBPG_SECTIONS                        
+nav_include_link in ('Y','N')                                                   
+                                                                                
+SASHANK                                                                         
+APEX$_WS_WEBPG_SECTION_3D_CK   C APEX$_WS_WEBPG_SECTIONS                        
+chart_3d in ('Y','N')                                                           
+                                                                                
+SASHANK                                                                         
+APEX$_WS_WEBPG_SECTIONS_PK     P APEX$_WS_WEBPG_SECTIONS                        
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007043                    C APEX$_WS_ROWS                                  
+"ID" IS NOT NULL                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007044                    C APEX$_WS_ROWS                                  
+"WS_APP_ID" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007045                    C APEX$_WS_ROWS                                  
+"DATA_GRID_ID" IS NOT NULL                                                      
+                                                                                
+SASHANK                                                                         
+SYS_C007046                    C APEX$_WS_ROWS                                  
+"CREATED_ON" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007047                    C APEX$_WS_ROWS                                  
+"CREATED_BY" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+APEX$_WS_ROWS_PK               P APEX$_WS_ROWS                                  
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007049                    C APEX$_WS_HISTORY                               
+"ROW_ID" IS NOT NULL                                                            
+                                                                                
+SASHANK                                                                         
+SYS_C007050                    C APEX$_WS_HISTORY                               
+"WS_APP_ID" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007051                    C APEX$_WS_HISTORY                               
+"DATA_GRID_ID" IS NOT NULL                                                      
+                                                                                
+SASHANK                                                                         
+SYS_C007052                    C APEX$_WS_NOTES                                 
+"WS_APP_ID" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007053                    C APEX$_WS_NOTES                                 
+"CREATED_ON" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007054                    C APEX$_WS_NOTES                                 
+"CREATED_BY" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+APEX$_WS_NOTES_CL_CK           C APEX$_WS_NOTES                                 
+component_level in ('WEBSHEET','ROW','WORKSPACE','WEBPAGE')                     
+                                                                                
+SASHANK                                                                         
+APEX$_WS_NOTES_PK              P APEX$_WS_NOTES                                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+APEX$_WS_NOTES_FK              R APEX$_WS_NOTES                                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007058                    C APEX$_WS_LINKS                                 
+"WS_APP_ID" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007059                    C APEX$_WS_LINKS                                 
+"LINK_NAME" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007060                    C APEX$_WS_LINKS                                 
+"URL" IS NOT NULL                                                               
+                                                                                
+SASHANK                                                                         
+SYS_C007061                    C APEX$_WS_LINKS                                 
+"CREATED_ON" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007062                    C APEX$_WS_LINKS                                 
+"CREATED_BY" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+APEX$_WS_LINKS_CL_CK           C APEX$_WS_LINKS                                 
+component_level in ('WEBSHEET','ROW','WORKSPACE','WEBPAGE')                     
+                                                                                
+SASHANK                                                                         
+APEX$_WS_LINKS_SH_CK           C APEX$_WS_LINKS                                 
+show_on_homepage in ('Y','N')                                                   
+                                                                                
+SASHANK                                                                         
+APEX$_WS_LINKS_PK              P APEX$_WS_LINKS                                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+APEX$_WS_LINKS_FK              R APEX$_WS_LINKS                                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007067                    C APEX$_WS_TAGS                                  
+"WS_APP_ID" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007068                    C APEX$_WS_TAGS                                  
+"CREATED_ON" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007069                    C APEX$_WS_TAGS                                  
+"CREATED_BY" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+APEX$_WS_TAGS_CL_CK            C APEX$_WS_TAGS                                  
+component_level in ('WEBSHEET','ROW','WORKSPACE','WEBPAGE')                     
+                                                                                
+SASHANK                                                                         
+APEX$_WS_TAGS_PK               P APEX$_WS_TAGS                                  
+                                                                                
+                                                                                
+SASHANK                                                                         
+
+OWNER                                                                           
+--------------------------------------------------------------------------------
+CONSTRAINT_NAME                C TABLE_NAME                                     
+------------------------------ - ------------------------------                 
+SEARCH_CONDITION                                                                
+--------------------------------------------------------------------------------
+APEX$_WS_TAGS_FK               R APEX$_WS_TAGS                                  
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007073                    C APEX$_WS_FILES                                 
+"WS_APP_ID" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007074                    C APEX$_WS_FILES                                 
+"NAME" IS NOT NULL                                                              
+                                                                                
+SASHANK                                                                         
+SYS_C007075                    C APEX$_WS_FILES                                 
+"MIME_TYPE" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007076                    C APEX$_WS_FILES                                 
+"CREATED_ON" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007077                    C APEX$_WS_FILES                                 
+"CREATED_BY" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+APEX$_WS_FILES_CL_CK           C APEX$_WS_FILES                                 
+component_level in ('WEBSHEET','ROW','WORKSPACE','WEBPAGE')                     
+                                                                                
+SASHANK                                                                         
+APEX$_WS_FILES_PK              P APEX$_WS_FILES                                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+APEX$_WS_FILES_FK              R APEX$_WS_FILES                                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007081                    C APEX$_WS_WEBPG_SECTION_HISTORY                 
+"SECTION_ID" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007082                    C APEX$_WS_WEBPG_SECTION_HISTORY                 
+"WS_APP_ID" IS NOT NULL                                                         
+                                                                                
+SASHANK                                                                         
+SYS_C007083                    C APEX$_WS_WEBPG_SECTION_HISTORY                 
+"WEBPAGE_ID" IS NOT NULL                                                        
+                                                                                
+SASHANK                                                                         
+SYS_C007084                    C APEX$_WS_WEBPG_SECTION_HISTORY                 
+"APPLICATION_USER_ID" IS NOT NULL                                               
+                                                                                
+SASHANK                                                                         
+SYS_C007085                    C APEX$_WS_WEBPG_SECTION_HISTORY                 
+"CHANGE_DATE" IS NOT NULL                                                       
+                                                                                
+SASHANK                                                                         
+BIN$bHQBqFtSQRKkJpBJxYv/Vg==$0 P BIN$9rsDsXRARsGVi/APk1XpfQ==$0                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007087                    P PET                                            
+                                                                                
+                                                                                
+SASHANK                                                                         
+BIN$6DjPa9azT5mVSAEl4E2odw==$0 P BIN$kzTp+UKfQfuAdjlzEOQK/g==$0                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+BIN$nGrBPMwNTZqj2SuS4ojzEA==$0 P BIN$crSjVcJkQO60AI8WjriXmg==$0                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+BIN$f4hoJ60JTO+1L4rXo1mAFQ==$0 C BIN$crSjVcJkQO60AI8WjriXmg==$0                 
+"NAME" IS NOT NULL                                                              
+                                                                                
+SASHANK                                                                         
+BIN$XcmRMaNZQKOV3M5IkdjEhA==$0 C BIN$crSjVcJkQO60AI8WjriXmg==$0                 
+"AGE" IS NOT NULL                                                               
+                                                                                
+SASHANK                                                                         
+SYS_C007110                    C ORDERS                                         
+"ID" IS NOT NULL                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007141                    P ORDERS                                         
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007114                    P CUSTOMERS                                      
+                                                                                
+                                                                                
+SASHANK                                                                         
+EMPBB02_PK                     P EMPBB02                                        
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007119                    C ORDERS                                         
+"AMOUNT" IS NOT NULL                                                            
+                                                                                
+SASHANK                                                                         
+SYS_C007120                    C CUSTOMERS                                      
+"NAME" IS NOT NULL                                                              
+                                                                                
+SASHANK                                                                         
+SYS_C007125                    C CUSTOMERS                                      
+salary > 30                                                                     
+                                                                                
+SASHANK                                                                         
+SYS_C007138                    C CUSTOMERS                                      
+"ID" IS NOT NULL                                                                
+                                                                                
+SASHANK                                                                         
+MYUNIQUECONSTRAINT             U ORDERS                                         
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007157                    V TOTAL_VIEW                                     
+                                                                                
+                                                                                
+SASHANK                                                                         
+BIN$+Y/9TCw2SYqUQ5DeMJWiNQ==$0 P BIN$l+0DC2dlSoad39Eo54dMKA==$0                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+BIN$4SGk51SySLWWIeKk8++70Q==$0 P BIN$+6i0jAR4Q/25hnZ+tpjGWg==$0                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+BIN$p5rORU5nTqO7T03fSEPjfg==$0 P BIN$9lcBXeNuQ+WYG0K3Yz9OTQ==$0                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+DEPTBB02_PK                    P DEPTBB02                                       
+                                                                                
+                                                                                
+SASHANK                                                                         
+BIN$Q9XNA+z7QyyJGv4XJNK/Rw==$0 P BIN$SQo9lXlWTs2G8KLFPxLdsQ==$0                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+MYFOREIGNKEY                   R EMPBB02                                        
+                                                                                
+                                                                                
+SASHANK                                                                         
+INFOBB02_PK                    P INFOBB02                                       
+                                                                                
+                                                                                
+SASHANK                                                                         
+BIN$60aC4MstRLuCxur9mdOYgQ==$0 P BIN$dLG56x9XTwiB4wJFiJ69wg==$0                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007214                    P TABLEB                                         
+                                                                                
+                                                                                
+SASHANK                                                                         
+SYS_C007216                    P TABLEA                                         
+                                                                                
+                                                                                
+SASHANK                                                                         
+BIN$GMwTxwHRQ12uYBhHWb4PdA==$0 P BIN$qQqxPnt2RVWYVROeb+gjOA==$0                 
+                                                                                
+                                                                                
+SASHANK                                                                         
+EMPBB02_ENAME_UK               U EMPBB02                                        
+                                                                                
+                                                                                
+SASHANK                                                                         
+EMPBB02_ENAME_CK               C EMPBB02                                        
 length(ename) <=10 or pos in ('gm','catcher')                                   
                                                                                 
-ST27                           SYS_C00150821                  C                 
-EMPBB02                                                                         
-"ENAME" IS NOT NULL                                                             
-                                                                                
-ST27                           EMPBB02_EMPNO_PK               P                 
-EMPBB02                                                                         
+SASHANK                                                                         
+EMPBB02_DEPTNO_FK              R EMPBB02                                        
                                                                                 
                                                                                 
-ST27                           INFOBB02_EMPNO_PK              P                 
-INFOBB02                                                                        
+SASHANK                                                                         
+BIN$pWgVdq4hQhStQIUC6xpYuA==$0 P BIN$bziUAdQ4QpCM8ztZu0lvCw==$0                 
                                                                                 
                                                                                 
-ST27                           SALSBB02_GRADE_ROLE_PK         P                 
-SALSBB02                                                                        
-                                                                                
-                                                                                
-ST27                           DEPTBB02_DEPTNO_PK             P                 
-DEPTBB02                                                                        
-                                                                                
-                                                                                
-ST27                           EMPBB02_ENAME_UK               U                 
-EMPBB02                                                                         
+SASHANK                                                                         
+SALSBB02_PK                    P SALSBB02                                       
                                                                                 
                                                                                 
 
-9 rows selected.
+119 rows selected.
 
 SQL> 
 SQL> --11.Drop the check constraint that you made earlier.
@@ -212,15 +668,13 @@ SQL> --of all players who were hired in the month of January.	Your code
 SQL> --should work tomorrow even if you trade two thirds of the team tonight.
 SQL> 
 SQL> 
-SQL> elect ename,hiredate from empbb02 where pos not in ('gm','coach')and hiredate like '__-JAN%'
+SQL> select ename,hiredate from empbb02 where pos not in ('gm','coach')and hiredate like '__-JAN%';
 
 ENAME           HIREDATE                                                        
 --------------- ---------                                                       
 cey             10-JAN-99                                                       
 mays            01-JAN-98                                                       
 williams        05-JAN-99                                                       
-
-3 rows selected.
 
 SQL> 
 SQL> --13.The boss wants to create a security department with deptno 60.  A guy
@@ -232,16 +686,25 @@ SQL> --other fields with similar creativity, but some discretion.  Mongo is not
 SQL> --big on levity.
 SQL> 
 SQL>  insert into deptbb02 values (60,'Security','Bawarchi','Lo Jolla','a bene placito');
+ insert into deptbb02 values (60,'Security','Bawarchi','Lo Jolla','a bene placito')
+*
+ERROR at line 1:
+ORA-00001: unique constraint (SASHANK.DEPTBB02_PK) violated 
 
-1 row created.
 
 SQL>  insert into empbb02 values(007,'Mongo','pitcher',712,to_char(sysdate,'dd-month-yy'),0,60,0);
+ insert into empbb02 values(007,'Mongo','pitcher',712,to_char(sysdate,'dd-month-yy'),0,60,0)
+             *
+ERROR at line 1:
+ORA-04098: trigger 'SASHANK.bi_EMPBB02' is invalid and failed re-validation 
 
-1 row created.
 
 SQL> insert into infobb02 values(007,'','',99,1000,0);
+insert into infobb02 values(007,'','',99,1000,0)
+*
+ERROR at line 1:
+ORA-00001: unique constraint (SASHANK.INFOBB02_PK) violated 
 
-1 row created.
 
 SQL> 
 SQL> --14. Add a constraint that a department number must be evenly divisible
