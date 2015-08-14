@@ -1,0 +1,13 @@
+create or replace package body sixPackDos2 as
+procedure empStatbb02(
+deptid IN empbb02.deptno%Type,
+avgsal OUT Number,
+totsal OUT Number
+) IS
+Begin
+ select avg(sal) into avgsal from
+ empbb02 where empbb02.deptno=deptid;
+end;
+end;
+/
+show errors

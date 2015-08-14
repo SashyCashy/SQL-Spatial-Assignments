@@ -1,0 +1,12 @@
+create or replace function functionPrototype
+(name IN empbb02.ename%Type,sal3 out empbb02.sal%Type)
+return deptbb02.dname%Type as gdname deptbb02.dname%type;
+Begin
+select deptbb02.dname,empbb02.sal
+into gdname,sal3
+from empbb02,deptbb02
+where empbb02.deptno = deptbb02.deptno and name = ename;
+return (gdname);
+End;
+/
+show errors

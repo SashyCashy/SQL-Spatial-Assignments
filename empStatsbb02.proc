@@ -1,12 +1,13 @@
-CREATE OR REPLACE PROCEDURE empStatsbb02(
-  deptid IN empbb02.deptno%TYPE,
-  avgsal OUT NUMBER,   
-  totsal OUT NUMBER) AS
-BEGIN
-  SELECT ROUND(AVG(empbb02.sal)),SUM(empbb02.sal)
-  INTO avgsal,totsal       
-  FROM empbb02
-  WHERE empbb02.deptno = deptid;
-END;
-.
+create or replace procedure empstatsbb02(
+deptid in empbb02.deptno % type,
+avgsal out Number,
+totsal out Number) as
+begin
+	select round (avg(empbb02.sal))
+	into avgsal from empbb02
+	where empbb02.deptno=deptid;
+	dbms_output.put_line(avgsal);
+end;
 /
+
+show errors
